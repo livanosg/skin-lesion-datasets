@@ -19,7 +19,11 @@ def download_dataset(dataset: str, force: bool = False) -> None:
     """
 
     local_data_dir = os.path.join(DATA_PATH, dataset)
-    urls: list = DATASETS_INFO[dataset].get("urls", None)
+    if dataset in DATASETS_INFO and "manual" in DATASETS_INFO[dataset]:
+        print(f"{dataset} must be downloaded by hand from {DATASETS_INFO[dataset]['manual']} "
+              f"and saved in {local_data_dir}")
+        return
+    urls: list = DATASETS_INFO.get(dataset, {}).get("urls", None)
     if urls is None:
         raise ValueError(f"Invalid dataset: {dataset}. Please choose from {list(DATASETS_INFO.keys())}")
 

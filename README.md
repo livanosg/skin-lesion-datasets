@@ -15,6 +15,7 @@
         - [MED-NODE Dermatology Database](https://www.cs.rug.nl/~imaging/databases/melanoma_naevi/index.html)
         - [PAD-UFES-20](https://data.mendeley.com/datasets/zr7vgbcyr2/1)
         - [Melanoma Classification Benchmark](https://skinclass.de/mclass/)
+        - [PH2 Database](https://www.fc.up.pt/addi/ph2%20database.html) (download by hand after registration, save `PH2Dataset.rar` in `data/ph2/`. Extracting it needs `unrar`, `7z` or `bsdtar`)
 
 - ### Setup datasets
     - Apply dataset specific logic to access each dataset under the same interface

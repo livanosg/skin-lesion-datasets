@@ -2,6 +2,7 @@
 import glob
 import os
 import shutil
+import subprocess
 from zipfile import ZipFile
 
 import pandas as pd
@@ -9,6 +10,22 @@ import pandas as pd
 from src.conf import DATA_PATH, SETUP_DATA_PATH
 from src.datasets_urls import DATASETS_INFO
 from src.downloaders import download_dataset
+
+# Python cannot read RAR (PH2), so use the first of these system tools that is installed.
+RAR_TOOLS = {"unrar": ["unrar", "x", "-o+", "{file}", "{dest}/"],
+             "7z": ["7z", "x", "-y", "-o{dest}", "{file}"],
+             "bsdtar": ["bsdtar", "-xf", "{file}", "-C", "{dest}"]}
+
+
+def _extract_rar(file: str) -> None:
+    """Extract a .rar file next to itself with unrar, 7z or bsdtar."""
+    dest = os.path.split(file)[0]
+    for tool, args in RAR_TOOLS.items():
+        if shutil.which(tool):
+            subprocess.run([a.format(file=file, dest=dest) for a in args],
+                           check=True, stdout=subprocess.DEVNULL)
+            return
+    raise RuntimeError(f"Cannot extract {file}: install one of {', '.join(RAR_TOOLS)}")
 
 
 class DatasetHandler:
@@ -30,7 +47,7 @@ class DatasetHandler:
 
     def setup_dataset(self, force: bool = False) -> None:
         """
-        Copy the raw data to self.setup_data_path and extract every zip file in place, recursively.
+        Copy the raw data to self.setup_data_path and extract every zip and rar file in place, recursively.
         :param force: remove an existing set up copy first
         """
         if force:
@@ -39,16 +56,23 @@ class DatasetHandler:
         print(f"Copying data from {self.init_data_path} to {self.setup_data_path}")
         shutil.copytree(src=self.init_data_path, dst=self.setup_data_path)
 
-        def _zip_extract(folder: str) -> None:
-            print(f"Extracting {folder}...")
-            for file in glob.glob(os.path.join(folder, "**/*.zip"), recursive=True):
-                with ZipFile(file, "r") as zip_obj:
-                    zip_obj.extractall(path=os.path.split(file)[0])
-                os.remove(file)
-            if glob.glob(os.path.join(folder, "**/*.zip"), recursive=True):
-                _zip_extract(folder=folder)
+        def _archives(folder: str) -> list[str]:
+            return [f for ext in ("zip", "rar")
+                    for f in glob.glob(os.path.join(folder, f"**/*.{ext}"), recursive=True)]
 
-        _zip_extract(self.setup_data_path)
+        def _extract(folder: str) -> None:
+            print(f"Extracting {folder}...")
+            for file in _archives(folder):
+                if file.endswith(".zip"):
+                    with ZipFile(file, "r") as zip_obj:
+                        zip_obj.extractall(path=os.path.split(file)[0])
+                else:
+                    _extract_rar(file)
+                os.remove(file)
+            if _archives(folder):
+                _extract(folder=folder)
+
+        _extract(self.setup_data_path)
 
     def split_data(self):
         """Placeholder for the dataset specific train, validation and test split."""

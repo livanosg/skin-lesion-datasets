@@ -83,8 +83,8 @@ DATASETS_INFO = {
                  ),
         "credentials": os.environ.get("SPC_CREDENTIALS")  # "username,password"
     },
+    # The download needs a registration form: save PH2Dataset.rar in data/ph2/ by hand
     'ph2': {
-        "urls": ("https://www.dropbox.com/s/k88qukc20ljnbuo/PH2Dataset.rar",
-                 )
+        "manual": "https://www.fc.up.pt/addi/ph2%20database.html"
     }
 }
