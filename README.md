@@ -1,5 +1,5 @@
-[![Pylint](https://github.com/livanosg/mel-data/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/livanosg/mel-data/actions/workflows/pylint.yml)
-[![Scorecard supply-chain security](https://github.com/livanosg/mel-data/actions/workflows/scorecard.yml/badge.svg)](https://github.com/livanosg/mel-data/actions/workflows/scorecard.yml)
+[![Pylint](https://github.com/livanosg/skin-lesion-datasets/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/livanosg/skin-lesion-datasets/actions/workflows/pylint.yml)
+[![Scorecard supply-chain security](https://github.com/livanosg/skin-lesion-datasets/actions/workflows/scorecard.yml/badge.svg)](https://github.com/livanosg/skin-lesion-datasets/actions/workflows/scorecard.yml)
 
 # Skin Lesion Datasets Manager
 ## A convenient manager for:
