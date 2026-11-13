@@ -1,3 +1,4 @@
+"""Download every dataset of DATASETS_INFO to data/."""
 from src.datasets_urls import DATASETS_INFO
 from src.downloaders import download_dataset
 

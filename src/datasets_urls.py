@@ -1,3 +1,4 @@
+"""Download URLs (and credentials when needed) of every dataset."""
 import os
 
 DATASETS_INFO = {
@@ -80,7 +81,7 @@ DATASETS_INFO = {
     'spc': {
         "urls": ("https://derm.cs.sfu.ca/restricted/release_v0.zip",
                  ),
-        "credentials": os.environ.get("SPC_CREDENTIALS", (None, None))
+        "credentials": os.environ.get("SPC_CREDENTIALS")  # "username,password"
     },
     'ph2': {
         "urls": ("https://www.dropbox.com/s/k88qukc20ljnbuo/PH2Dataset.rar",

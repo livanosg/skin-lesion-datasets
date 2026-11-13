@@ -1,3 +1,4 @@
+"""Download the raw files of a dataset."""
 import os
 import shutil
 from multiprocessing.pool import ThreadPool
@@ -10,10 +11,10 @@ from src.conf import DATA_PATH
 from src.datasets_urls import DATASETS_INFO
 
 
-def download_dataset(dataset: str, force: bool = False):
+def download_dataset(dataset: str, force: bool = False) -> None:
     """
     The download_dataset function downloads the dataset from given URLs.
-    :param dataset:
+    :param dataset: key of DATASETS_INFO
     :param force: bool: Remove contents of the init_data and download of the dataset
     """
 
@@ -22,26 +23,26 @@ def download_dataset(dataset: str, force: bool = False):
     if urls is None:
         raise ValueError(f"Invalid dataset: {dataset}. Please choose from {list(DATASETS_INFO.keys())}")
 
-    credentials = DATASETS_INFO[dataset].get("credentials", (None, None))
-    if dataset in ("spc",) and credentials == (None, None):
+    credentials = DATASETS_INFO[dataset].get("credentials")
+    if dataset in ("spc",) and not credentials:
         print(f"No credentials provided to download {dataset}")
         return
-    else:
-        credentials = credentials.split(",")
+    auth = HTTPBasicAuth(*credentials.split(",", 1)) if credentials else None
 
     def _request(_url, position):
         print(f"Downloading {os.path.basename(_url)} to {local_data_dir}")
         if "www.dropbox.com" in _url:
             _url = _url.replace("www.dropbox.com", "dl.dropboxusercontent.com").split("?")[0]
 
-        resp = requests.get(_url, auth=HTTPBasicAuth(*credentials), stream=True)
+        resp = requests.get(_url, auth=auth, stream=True, timeout=60)
+        resp.raise_for_status()
 
         with tqdm(desc=os.path.basename(_url), total=int(resp.headers.get('content-length', 0)),
-                  unit='iB', unit_scale=True, unit_divisor=1024, position=position) as bar:
+                  unit='iB', unit_scale=True, unit_divisor=1024, position=position) as pbar:
             with open(os.path.join(local_data_dir, os.path.basename(_url)), 'wb') as file:
                 for data in resp.iter_content(chunk_size=1024):
                     file.write(data)
-                    bar.update(1024)
+                    pbar.update(1024)
 
     if not os.path.exists(local_data_dir) or force:
         if force:

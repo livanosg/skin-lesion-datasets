@@ -1,0 +1,6 @@
+[FORMAT]
+# The dataset URLs do not fit in 100 characters
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=fixme
